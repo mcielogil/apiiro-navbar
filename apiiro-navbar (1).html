@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apiiro — Navbar Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body { font-family: 'Inter', sans-serif; background: #f0f2f5; min-height: 600px; }
+
+    /* Announcement bar */
+    .ann-bar {
+      background: #0f1b2d;
+      text-align: center;
+      padding: 10px 16px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.78);
+    }
+    .ann-bar a { color: #3de8b0; text-decoration: none; font-weight: 600; margin-left: 4px; }
+    .ann-bar a:hover { text-decoration: underline; }
+
+    /* Navbar shell */
+    .navbar {
+      background: #fff;
+      border-bottom: 1px solid #e4e7eb;
+      position: relative;
+      z-index: 200;
+    }
+
+    .nav-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 32px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+    }
+
+    /* Logo */
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      text-decoration: none;
+      margin-right: 32px;
+      flex-shrink: 0;
+    }
+    .logo-word {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0f1b2d;
+      letter-spacing: -0.5px;
+      line-height: 1;
+    }
+
+    /* Nav links */
+    .nav-links { display: flex; align-items: center; list-style: none; flex: 1; }
+
+    .nav-item { position: relative; }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 14px;
+      background: none;
+      border: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: #1a2332;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s;
+      white-space: nowrap;
+      line-height: 1;
+    }
+    .nav-btn:hover { background: #f4f6f8; }
+    .nav-item.open .nav-btn { color: #00C896; background: #edfaf5; }
+
+    .chev {
+      width: 14px; height: 14px;
+      color: #aab0bb;
+      transition: transform 0.2s, color 0.12s;
+      flex-shrink: 0;
+    }
+    .nav-item.open .chev { transform: rotate(180deg); color: #00C896; }
+
+    /* Right controls */
+    .nav-right { margin-left: auto; display: flex; align-items: center; gap: 2px; }
+
+    .btn-login {
+      padding: 9px 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: #1a2332;
+      background: none;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.12s;
+      white-space: nowrap;
+    }
+    .btn-login:hover { background: #f4f6f8; }
+
+    .btn-demo {
+      display: inline-flex;
+      align-items: center;
+      padding: 10px 22px;
+      background: #00C896;
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s;
+      white-space: nowrap;
+      margin-left: 6px;
+    }
+    .btn-demo:hover { background: #00b588; }
+
+    /* Dropdown base */
+    .dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      border: 1px solid #e0e4ea;
+      border-radius: 16px;
+      box-shadow: 0 12px 48px rgba(15,27,45,0.13), 0 2px 8px rgba(15,27,45,0.05);
+      z-index: 300;
+      overflow: hidden;
+    }
+    .nav-item.open .dropdown { display: flex; animation: dropIn 0.15s ease; }
+
+    @keyframes dropIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    /* Two-column mega */
+    .dropdown-mega { width: 760px; align-items: stretch; }
+    /* Single-column */
+    .dropdown-single { flex-direction: column; min-width: 240px; padding: 8px; }
+
+    /* Mega columns */
+    .mega-col { padding: 20px 18px; flex: 1; }
+    .mega-col-left { max-width: 380px; }
+    .mega-col-right { border-left: 1px solid #eef0f4; }
+
+    /* Featured block */
+    .featured-card {
+      display: block;
+      background: #f6f8fb;
+      border: 1px solid #e0e4ea;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      text-decoration: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .featured-card:hover { border-color: #00C896; background: #edfaf5; }
+    .featured-ico {
+      width: 38px; height: 38px;
+      border-radius: 9px;
+      background: #0f1b2d;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 10px;
+    }
+    .featured-title { font-size: 14px; font-weight: 600; color: #0f1b2d; margin-bottom: 4px; }
+    .featured-desc { font-size: 12.5px; color: #6b7685; line-height: 1.5; }
+
+    /* Section labels */
+    .sec-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.7px;
+      text-transform: uppercase;
+      color: #9aa5b4;
+      padding: 2px 8px 5px;
+      display: block;
+    }
+    .sec-sublabel {
+      font-size: 11px;
+      font-weight: 500;
+      color: #b0bac6;
+      padding: 2px 8px 4px;
+      display: block;
+    }
+
+    .dd-divider { height: 1px; background: #eef0f4; margin: 6px 0; }
+
+    /* Row items */
+    .dd-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 8px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background 0.12s;
+    }
+    .dd-item:hover { background: #edfaf5; }
+    .dd-item:hover .dd-name { color: #00C896; }
+
+    .dd-ico {
+      width: 32px; height: 32px;
+      border-radius: 7px;
+      background: #0f1b2d;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .dd-ico svg { width: 15px; height: 15px; }
+
+    .dd-name { font-size: 13.5px; font-weight: 600; color: #0f1b2d; line-height: 1.3; transition: color 0.12s; }
+    .dd-desc { font-size: 12px; color: #6b7685; margin-top: 2px; line-height: 1.4; }
+
+    /* Page placeholder */
+    .page-body { max-width: 580px; margin: 40px auto; text-align: center; color: #9aa5b4; font-size: 14px; line-height: 1.8; }
+    .page-body strong { color: #6b7685; font-weight: 600; }
+    code { background: #e8ebef; padding: 2px 5px; border-radius: 4px; font-size: 12px; }
+  </style>
+</head>
+<body>
+
+  <!-- Announcement bar -->
+  <div class="ann-bar">
+    📣 Introducing AI Threat Modeling: Preventing Risks Before Code Exists.
+    <a href="#">Learn more →</a>
+  </div>
+
+  <header class="navbar">
+    <nav class="nav-inner">
+
+      <!-- Logo -->
+      <a href="https://apiiro.com" class="nav-logo">
+        <span class="logo-word">apiiro</span>
+      </a>
+
+      <ul class="nav-links">
+
+        <!-- Product (mega two-column) -->
+        <li class="nav-item" id="menu-product">
+          <button class="nav-btn" onclick="toggle('product')">
+            Product
+            <svg class="chev" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="dropdown dropdown-mega">
+
+            <!-- Left: Platform + Guardian + Detection + Prevention -->
+            <div class="mega-col mega-col-left">
+              <span class="sec-label">Platform</span>
+              <a href="#" class="featured-card">
+                <div class="featured-ico">
+                  <svg width="20" height="20" viewBox="0 0 40 40" fill="none">
+                    <polygon points="20,1 39,20 20,39 1,20" fill="#00C896"/>
+                    <polygon points="20,10 29,20 20,30 11,20" fill="#0f1b2d"/>
+                  </svg>
+                </div>
+                <div class="featured-title">Guardian Agent</div>
+                <div class="featured-desc">Reasoning built on AppSec Data Fabric — your AI AppSec Agent, built for enterprise security.</div>
+              </a>
+
+              <span class="sec-label" style="margin-top:4px;">Detection &amp; Response</span>
+              <a href="#" class="dd-item">
+                <div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M2 14V6l6-4 6 4v8" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 14v-4h4v4" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+                <div><div class="dd-name">AI SCA &amp; AI SAST</div><div class="dd-desc">Intelligent scanner-powered risk detection</div></div>
+              </a>
+              <a href="#" class="dd-item">
+                <div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2l5 3v4c0 3-5 5-5 5S3 12 3 9V5z" stroke="#00C896" stroke-width="1.4" stroke-linejoin="round"/></svg></div>
+                <div><div class="dd-name">Secrets, APIsec &amp; IaC</div><div class="dd-desc">Detect exposure across code and infra</div></div>
+              </a>
+              <a href="#" class="dd-item">
+                <div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="#00C896" stroke-width="1.4"/><path d="M5 8h6M8 5v6" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+                <div><div class="dd-name">SSCS</div><div class="dd-desc">Software supply chain security</div></div>
+              </a>
+
+              <div class="dd-divider"></div>
+              <span class="sec-label">Prevention</span>
+              <a href="#" class="dd-item">
+                <div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M2 11l3-3 2 2 3-3 4-4" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div><div class="dd-name">Secure Prompt &amp; Pre-commit AutoFix</div><div class="dd-desc">Stop risks before they enter the codebase</div></div>
+              </a>
+              <a href="#" class="dd-item">
+                <div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M4 8h8M8 4l4 4-4 4" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div><div class="dd-name">AI Threat Modeling</div><div class="dd-desc">Generate threats and mitigations at design</div></div>
+              </a>
+            </div>
+
+            <!-- Right: Solutions -->
+            <div class="mega-col mega-col-right">
+              <span class="sec-label">Solutions</span>
+
+              <span class="sec-sublabel">Risk Management</span>
+              <a href="#" class="dd-item">
+                <div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2l5 3v4c0 3-5 5-5 5S3 12 3 9V5z" stroke="#00C896" stroke-width="1.4" stroke-linejoin="round"/><path d="M6 8l1.5 1.5L10 6" stroke="#00C896" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+                <div><div class="dd-name">SLA &amp; Ticketing / GRC</div><div class="dd-desc">Enforce SLAs, integrate with GRC tools</div></div>
+              </a>
+              <a href="#" class="dd-item">
+                <div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="3" stroke="#00C896" stroke-width="1.4"/><path d="M2 14c0-3.3 2.7-5 6-5s6 1.7 6 5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+                <div><div class="dd-name">Org Code Owners</div><div class="dd-desc">Map risks to responsible owners</div></div>
+              </a>
+
+              <div class="dd-divider"></div>
+              <span class="sec-sublabel">Manual Processes</span>
+              <a href="#" class="dd-item">
+                <div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><rect x="3" y="2" width="10" height="12" rx="1.5" stroke="#00C896" stroke-width="1.4"/><path d="M6 6h4M6 9h3" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+                <div><div class="dd-name">Pen-Test Mgmt &amp; Scoping</div><div class="dd-desc">Streamline pen-test planning and scope</div></div>
+              </a>
+              <a href="#" class="dd-item">
+                <div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10M3 8h7M3 12h5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+                <div><div class="dd-name">Audit &amp; Risk Assessment</div><div class="dd-desc">Evidence collection and questionnaires</div></div>
+              </a>
+
+              <div class="dd-divider"></div>
+              <span class="sec-sublabel">Orchestration</span>
+              <a href="#" class="dd-item">
+                <div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><circle cx="4" cy="8" r="1.8" stroke="#00C896" stroke-width="1.3"/><circle cx="12" cy="4" r="1.8" stroke="#00C896" stroke-width="1.3"/><circle cx="12" cy="12" r="1.8" stroke="#00C896" stroke-width="1.3"/><path d="M5.8 8h2.5M10.2 5L8.5 7M10.2 11L8.5 9" stroke="#00C896" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+                <div><div class="dd-name">3rd-party Tools &amp; Workflows</div><div class="dd-desc">Integrate, automate, and report</div></div>
+              </a>
+            </div>
+
+          </div>
+        </li>
+
+        <!-- Company -->
+        <li class="nav-item" id="menu-company">
+          <button class="nav-btn" onclick="toggle('company')">
+            Company
+            <svg class="chev" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="dropdown dropdown-single">
+            <a href="#" class="dd-item">
+              <div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="3" stroke="#00C896" stroke-width="1.4"/><path d="M2 14c0-3.3 2.7-5 6-5s6 1.7 6 5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+              <div><div class="dd-name">About us</div><div class="dd-desc">Our mission, vision, and team</div></div>
+            </a>
+            <a href="#" class="dd-item">
+              <div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2v5l3 2" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="8" r="6" stroke="#00C896" stroke-width="1.4"/></svg></div>
+              <div><div class="dd-name">Newsroom</div><div class="dd-desc">Press releases and announcements</div></div>
+            </a>
+            <a href="#" class="dd-item">
+              <div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 12l3-3 2 2 5-6" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><rect x="2" y="2" width="12" height="12" rx="2" stroke="#00C896" stroke-width="1.4"/></svg></div>
+              <div><div class="dd-name">Careers</div><div class="dd-desc">Join the Apiiro team</div></div>
+            </a>
+          </div>
+        </li>
+
+        <!-- Resources -->
+        <li class="nav-item" id="menu-resources">
+          <button class="nav-btn" onclick="toggle('resources')">
+            Resources
+            <svg class="chev" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="dropdown dropdown-single">
+            <a href="#" class="dd-item">
+              <div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><rect x="3" y="2" width="10" height="12" rx="1.5" stroke="#00C896" stroke-width="1.4"/><path d="M6 6h4M6 9h3" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+              <div><div class="dd-name">Blog</div><div class="dd-desc">Insights on AppSec and risk</div></div>
+            </a>
+            <a href="#" class="dd-item">
+              <div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#00C896" stroke-width="1.4"/><polygon points="6.5,5.5 6.5,10.5 11,8" fill="#00C896"/></svg></div>
+              <div><div class="dd-name">Webinars</div><div class="dd-desc">Live and on-demand sessions</div></div>
+            </a>
+            <a href="#" class="dd-item">
+              <div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10M3 8h7M3 12h5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+              <div><div class="dd-name">Documentation</div><div class="dd-desc">Guides, APIs, and references</div></div>
+            </a>
+          </div>
+        </li>
+
+      </ul>
+
+      <div class="nav-right">
+        <a href="#" class="btn-login">Log in</a>
+        <a href="#" class="btn-demo">Get a demo</a>
+      </div>
+
+    </nav>
+  </header>
+
+  <div class="page-body">
+    <strong>↑ Navbar preview — CEO presentation</strong><br>
+    Click any nav item to open its dropdown.<br>
+    Replace <code>#</code> links with real URLs before going live.
+  </div>
+
+  <script>
+    function toggle(id) {
+      document.querySelectorAll('.nav-item').forEach(el => {
+        el.classList[el.id === 'menu-' + id ? 'toggle' : 'remove']('open');
+      });
+    }
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.nav-item'))
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('open'));
+    });
+  </script>
+
+</body>
+</html>
