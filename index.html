@@ -20,7 +20,6 @@
       color: #0f1b2d;
     }
 
-    /* Announcement bar */
     .ann-bar {
       background: #0f1b2d;
       text-align: center;
@@ -40,7 +39,6 @@
       text-decoration: underline;
     }
 
-    /* Navbar shell */
     .navbar {
       background: #fff;
       border-bottom: 1px solid #e4e7eb;
@@ -58,7 +56,6 @@
       position: relative;
     }
 
-    /* Logo */
     .nav-logo {
       display: flex;
       align-items: center;
@@ -76,12 +73,12 @@
       line-height: 1;
     }
 
-    /* Nav links */
     .nav-links {
       display: flex;
       align-items: center;
       list-style: none;
       flex: 1;
+      gap: 2px;
     }
 
     .nav-item {
@@ -128,7 +125,6 @@
       color: #00C896;
     }
 
-    /* Right controls */
     .nav-right {
       margin-left: auto;
       display: flex;
@@ -177,7 +173,6 @@
       background: #00b588;
     }
 
-    /* Dropdown base */
     .dropdown {
       display: none;
       position: absolute;
@@ -206,21 +201,39 @@
       }
     }
 
-    /* Mega dropdown */
-    .dropdown-mega {
-      width: min(880px, calc(100vw - 48px));
-      display: grid;
-      grid-template-columns: 1.05fr 0.95fr;
-      align-items: stretch;
-    }
-
-    /* Important: anchor Product dropdown to the left of its trigger */
-    #menu-product .dropdown-mega {
+    /* Product mega menu */
+    .dropdown-product {
+      width: min(760px, calc(100vw - 48px));
       left: 0;
       transform: none;
+      padding: 12px;
+      display: none;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 10px;
     }
 
-    /* Single-column dropdowns stay centered */
+    .nav-item.open .dropdown-product {
+      display: grid;
+      animation: dropIn 0.15s ease;
+    }
+
+    /* Solutions mega menu */
+    .dropdown-solutions {
+      width: min(1120px, calc(100vw - 48px));
+      left: -120px;
+      transform: none;
+      padding: 14px;
+      display: none;
+      grid-template-columns: repeat(5, minmax(180px, 1fr));
+      gap: 8px;
+    }
+
+    .nav-item.open .dropdown-solutions {
+      display: grid;
+      animation: dropIn 0.15s ease;
+    }
+
+    /* Single dropdowns */
     .dropdown-single {
       left: 50%;
       transform: translateX(-50%);
@@ -229,31 +242,44 @@
       padding: 8px;
     }
 
-    /* Mega columns */
-    .mega-col {
-      padding: 20px 18px;
+    .menu-panel {
       min-width: 0;
+      padding: 6px;
     }
 
-    .mega-col-left {
-      min-width: 0;
-    }
-
-    .mega-col-right {
-      min-width: 0;
+    .menu-panel + .menu-panel {
       border-left: 1px solid #eef0f4;
     }
 
-    /* Featured block */
+    .menu-col {
+      min-width: 0;
+      padding: 8px;
+      border-radius: 12px;
+    }
+
+    .menu-col:hover {
+      background: #fafbfc;
+    }
+
+    .menu-col-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.7px;
+      text-transform: uppercase;
+      color: #97a3b2;
+      padding: 2px 8px 8px;
+    }
+
     .featured-card {
       display: block;
       background: #f6f8fb;
       border: 1px solid #e0e4ea;
       border-radius: 12px;
       padding: 16px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       text-decoration: none;
       transition: border-color 0.15s, background 0.15s;
+      min-width: 0;
     }
 
     .featured-card:hover {
@@ -285,37 +311,27 @@
       line-height: 1.5;
     }
 
-    /* Section labels */
     .sec-label {
       font-size: 11px;
       font-weight: 600;
       letter-spacing: 0.7px;
       text-transform: uppercase;
       color: #9aa5b4;
-      padding: 2px 8px 5px;
-      display: block;
-    }
-
-    .sec-sublabel {
-      font-size: 11px;
-      font-weight: 500;
-      color: #b0bac6;
-      padding: 2px 8px 4px;
+      padding: 2px 8px 6px;
       display: block;
     }
 
     .dd-divider {
       height: 1px;
       background: #eef0f4;
-      margin: 6px 0;
+      margin: 8px 0;
     }
 
-    /* Row items */
     .dd-item {
       display: flex;
       align-items: flex-start;
       gap: 10px;
-      padding: 8px 8px;
+      padding: 9px 8px;
       border-radius: 8px;
       text-decoration: none;
       transition: background 0.12s;
@@ -328,6 +344,10 @@
 
     .dd-item:hover .dd-name {
       color: #00C896;
+    }
+
+    .dd-item > div:last-child {
+      min-width: 0;
     }
 
     .dd-ico {
@@ -347,10 +367,6 @@
       height: 15px;
     }
 
-    .dd-item > div:last-child {
-      min-width: 0;
-    }
-
     .dd-name {
       font-size: 13.5px;
       font-weight: 600;
@@ -368,9 +384,8 @@
       word-break: break-word;
     }
 
-    /* Page placeholder */
     .page-body {
-      max-width: 580px;
+      max-width: 660px;
       margin: 40px auto;
       text-align: center;
       color: #9aa5b4;
@@ -391,24 +406,39 @@
       font-size: 12px;
     }
 
-    /* Small safeguard for narrower screens */
+    @media (max-width: 1200px) {
+      .dropdown-solutions {
+        width: min(960px, calc(100vw - 32px));
+        left: -180px;
+        grid-template-columns: repeat(3, minmax(220px, 1fr));
+      }
+    }
+
     @media (max-width: 980px) {
       .nav-inner {
         padding: 0 20px;
       }
 
-      .dropdown-mega {
+      .dropdown-product {
         width: min(760px, calc(100vw - 32px));
         grid-template-columns: 1fr;
       }
 
-      .mega-col-right {
+      .dropdown-solutions {
+        width: min(760px, calc(100vw - 32px));
+        left: 0;
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
+      }
+
+      .menu-panel + .menu-panel {
         border-left: none;
         border-top: 1px solid #eef0f4;
       }
+    }
 
-      #menu-product .dropdown-mega {
-        left: 0;
+    @media (max-width: 640px) {
+      .dropdown-solutions {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -429,6 +459,7 @@
 
       <ul class="nav-links">
 
+        <!-- Product -->
         <li class="nav-item" id="menu-product">
           <button class="nav-btn" onclick="toggle('product')">
             Product
@@ -437,10 +468,9 @@
             </svg>
           </button>
 
-          <div class="dropdown dropdown-mega">
-
-            <div class="mega-col mega-col-left">
-              <span class="sec-label">Platform</span>
+          <div class="dropdown dropdown-product">
+            <div class="menu-panel">
+              <span class="sec-label">One Product</span>
               <a href="#" class="featured-card">
                 <div class="featured-ico">
                   <svg width="20" height="20" viewBox="0 0 40 40" fill="none">
@@ -449,20 +479,23 @@
                   </svg>
                 </div>
                 <div class="featured-title">Guardian Agent</div>
-                <div class="featured-desc">Reasoning built on AppSec Data Fabric — your AI AppSec Agent, built for enterprise security.</div>
+                <div class="featured-desc">One agent, built on the AppSec Data Fabric, spanning detection, prevention, risk management, orchestration, and manual security processes.</div>
               </a>
+            </div>
 
-              <span class="sec-label" style="margin-top:4px;">Detection &amp; Response</span>
+            <div class="menu-panel">
+              <span class="sec-label">Five Solutions</span>
+
               <a href="#" class="dd-item">
                 <div class="dd-ico">
                   <svg viewBox="0 0 16 16" fill="none">
-                    <path d="M2 14V6l6-4 6 4v8" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M6 14v-4h4v4" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/>
+                    <rect x="2" y="2" width="12" height="12" rx="2" stroke="#00C896" stroke-width="1.4"/>
+                    <path d="M8 4v8M4 8h8" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/>
                   </svg>
                 </div>
                 <div>
-                  <div class="dd-name">AI SCA &amp; AI SAST</div>
-                  <div class="dd-desc">Intelligent scanner-powered risk detection</div>
+                  <div class="dd-name">Detection &amp; Response</div>
+                  <div class="dd-desc">Scanner-led security coverage across code, secrets, APIs, IaC, and supply chain.</div>
                 </div>
               </a>
 
@@ -473,8 +506,78 @@
                   </svg>
                 </div>
                 <div>
-                  <div class="dd-name">Secrets, APIsec &amp; IaC</div>
-                  <div class="dd-desc">Detect exposure across code and infra</div>
+                  <div class="dd-name">Risk Management</div>
+                  <div class="dd-desc">SLA management, ticketing/GRC workflows, and ownership mapping.</div>
+                </div>
+              </a>
+
+              <a href="#" class="dd-item">
+                <div class="dd-ico">
+                  <svg viewBox="0 0 16 16" fill="none">
+                    <path d="M4 8h8M8 4l4 4-4 4" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="dd-name">Prevention</div>
+                  <div class="dd-desc">Stop issues earlier with secure prompt, pre-commit scanning, autofix, and AI threat modeling.</div>
+                </div>
+              </a>
+
+              <a href="#" class="dd-item">
+                <div class="dd-ico">
+                  <svg viewBox="0 0 16 16" fill="none">
+                    <circle cx="4" cy="8" r="1.8" stroke="#00C896" stroke-width="1.3"/>
+                    <circle cx="12" cy="4" r="1.8" stroke="#00C896" stroke-width="1.3"/>
+                    <circle cx="12" cy="12" r="1.8" stroke="#00C896" stroke-width="1.3"/>
+                    <path d="M5.8 8h2.5M10.2 5L8.5 7M10.2 11L8.5 9" stroke="#00C896" stroke-width="1.3" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="dd-name">Orchestration</div>
+                  <div class="dd-desc">Connect 3rd-party tools, workflows, and reporting layers.</div>
+                </div>
+              </a>
+
+              <a href="#" class="dd-item">
+                <div class="dd-ico">
+                  <svg viewBox="0 0 16 16" fill="none">
+                    <rect x="3" y="2" width="10" height="12" rx="1.5" stroke="#00C896" stroke-width="1.4"/>
+                    <path d="M6 6h4M6 9h3" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="dd-name">Manual Processes</div>
+                  <div class="dd-desc">Pen-test management, audit evidence collection, and assessment workflows.</div>
+                </div>
+              </a>
+            </div>
+          </div>
+        </li>
+
+        <!-- Solutions -->
+        <li class="nav-item" id="menu-solutions">
+          <button class="nav-btn" onclick="toggle('solutions')">
+            Solutions
+            <svg class="chev" viewBox="0 0 14 14" fill="none">
+              <path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <div class="dropdown dropdown-solutions">
+
+            <div class="menu-col">
+              <div class="menu-col-title">Detection &amp; Response</div>
+
+              <a href="#" class="dd-item">
+                <div class="dd-ico">
+                  <svg viewBox="0 0 16 16" fill="none">
+                    <path d="M2 14V6l6-4 6 4v8" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M6 14v-4h4v4" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="dd-name">AI SCA</div>
+                  <div class="dd-desc">AI-powered software composition analysis.</div>
                 </div>
               </a>
 
@@ -486,53 +589,88 @@
                   </svg>
                 </div>
                 <div>
+                  <div class="dd-name">AI SAST</div>
+                  <div class="dd-desc">Intelligent code risk analysis.</div>
+                </div>
+              </a>
+
+              <a href="#" class="dd-item">
+                <div class="dd-ico">
+                  <svg viewBox="0 0 16 16" fill="none">
+                    <path d="M3 4h10M3 8h7M3 12h5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div>
                   <div class="dd-name">SSCS</div>
-                  <div class="dd-desc">Software supply chain security</div>
+                  <div class="dd-desc">Software supply chain security.</div>
                 </div>
               </a>
 
-              <div class="dd-divider"></div>
-
-              <span class="sec-label">Prevention</span>
-              <a href="#" class="dd-item">
-                <div class="dd-ico">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <path d="M2 11l3-3 2 2 3-3 4-4" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </div>
-                <div>
-                  <div class="dd-name">Secure Prompt &amp; Pre-commit AutoFix</div>
-                  <div class="dd-desc">Stop risks before they enter the codebase</div>
-                </div>
-              </a>
-
-              <a href="#" class="dd-item">
-                <div class="dd-ico">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <path d="M4 8h8M8 4l4 4-4 4" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </div>
-                <div>
-                  <div class="dd-name">AI Threat Modeling</div>
-                  <div class="dd-desc">Generate threats and mitigations at design</div>
-                </div>
-              </a>
-            </div>
-
-            <div class="mega-col mega-col-right">
-              <span class="sec-label">Solutions</span>
-
-              <span class="sec-sublabel">Risk Management</span>
               <a href="#" class="dd-item">
                 <div class="dd-ico">
                   <svg viewBox="0 0 16 16" fill="none">
                     <path d="M8 2l5 3v4c0 3-5 5-5 5S3 12 3 9V5z" stroke="#00C896" stroke-width="1.4" stroke-linejoin="round"/>
-                    <path d="M6 8l1.5 1.5L10 6" stroke="#00C896" stroke-width="1.3" stroke-linecap="round"/>
                   </svg>
                 </div>
                 <div>
-                  <div class="dd-name">SLA &amp; Ticketing / GRC</div>
-                  <div class="dd-desc">Enforce SLAs, integrate with GRC tools</div>
+                  <div class="dd-name">Secrets</div>
+                  <div class="dd-desc">Detect secrets exposure across codebases.</div>
+                </div>
+              </a>
+
+              <a href="#" class="dd-item">
+                <div class="dd-ico">
+                  <svg viewBox="0 0 16 16" fill="none">
+                    <circle cx="8" cy="8" r="5.5" stroke="#00C896" stroke-width="1.4"/>
+                    <path d="M5 8h6" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="dd-name">APIsec</div>
+                  <div class="dd-desc">Surface API-related security issues.</div>
+                </div>
+              </a>
+
+              <a href="#" class="dd-item">
+                <div class="dd-ico">
+                  <svg viewBox="0 0 16 16" fill="none">
+                    <path d="M4 12V4h8v8" stroke="#00C896" stroke-width="1.4" stroke-linejoin="round"/>
+                    <path d="M6 6h4M6 9h4" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="dd-name">IaC</div>
+                  <div class="dd-desc">Infrastructure as code risk detection.</div>
+                </div>
+              </a>
+            </div>
+
+            <div class="menu-col">
+              <div class="menu-col-title">Risk Management</div>
+
+              <a href="#" class="dd-item">
+                <div class="dd-ico">
+                  <svg viewBox="0 0 16 16" fill="none">
+                    <path d="M8 2v5l3 2" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/>
+                    <circle cx="8" cy="8" r="6" stroke="#00C896" stroke-width="1.4"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="dd-name">SLA</div>
+                  <div class="dd-desc">Enforce and track security SLAs.</div>
+                </div>
+              </a>
+
+              <a href="#" class="dd-item">
+                <div class="dd-ico">
+                  <svg viewBox="0 0 16 16" fill="none">
+                    <rect x="3" y="2" width="10" height="12" rx="1.5" stroke="#00C896" stroke-width="1.4"/>
+                    <path d="M6 6h4M6 9h3" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="dd-name">Ticketing / GRC</div>
+                  <div class="dd-desc">Connect remediation to governance systems.</div>
                 </div>
               </a>
 
@@ -545,41 +683,14 @@
                 </div>
                 <div>
                   <div class="dd-name">Org Code Owners</div>
-                  <div class="dd-desc">Map risks to responsible owners</div>
+                  <div class="dd-desc">Map issues to responsible teams and owners.</div>
                 </div>
               </a>
+            </div>
 
-              <div class="dd-divider"></div>
+            <div class="menu-col">
+              <div class="menu-col-title">Orchestration</div>
 
-              <span class="sec-sublabel">Manual Processes</span>
-              <a href="#" class="dd-item">
-                <div class="dd-ico">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <rect x="3" y="2" width="10" height="12" rx="1.5" stroke="#00C896" stroke-width="1.4"/>
-                    <path d="M6 6h4M6 9h3" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/>
-                  </svg>
-                </div>
-                <div>
-                  <div class="dd-name">Pen-Test Mgmt &amp; Scoping</div>
-                  <div class="dd-desc">Streamline pen-test planning and scope</div>
-                </div>
-              </a>
-
-              <a href="#" class="dd-item">
-                <div class="dd-ico">
-                  <svg viewBox="0 0 16 16" fill="none">
-                    <path d="M3 4h10M3 8h7M3 12h5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/>
-                  </svg>
-                </div>
-                <div>
-                  <div class="dd-name">Audit &amp; Risk Assessment</div>
-                  <div class="dd-desc">Evidence collection and questionnaires</div>
-                </div>
-              </a>
-
-              <div class="dd-divider"></div>
-
-              <span class="sec-sublabel">Orchestration</span>
               <a href="#" class="dd-item">
                 <div class="dd-ico">
                   <svg viewBox="0 0 16 16" fill="none">
@@ -590,8 +701,115 @@
                   </svg>
                 </div>
                 <div>
-                  <div class="dd-name">3rd-party Tools &amp; Workflows</div>
-                  <div class="dd-desc">Integrate, automate, and report</div>
+                  <div class="dd-name">3rd-party Tools</div>
+                  <div class="dd-desc">Integrate with the rest of the security stack.</div>
+                </div>
+              </a>
+
+              <a href="#" class="dd-item">
+                <div class="dd-ico">
+                  <svg viewBox="0 0 16 16" fill="none">
+                    <path d="M3 4h10M3 8h7M3 12h5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="dd-name">Workflows</div>
+                  <div class="dd-desc">Route findings through operational processes.</div>
+                </div>
+              </a>
+
+              <a href="#" class="dd-item">
+                <div class="dd-ico">
+                  <svg viewBox="0 0 16 16" fill="none">
+                    <path d="M3 12l3-3 2 2 5-6" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                    <rect x="2" y="2" width="12" height="12" rx="2" stroke="#00C896" stroke-width="1.4"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="dd-name">Reporting</div>
+                  <div class="dd-desc">Operational and executive reporting workflows.</div>
+                </div>
+              </a>
+            </div>
+
+            <div class="menu-col">
+              <div class="menu-col-title">Prevention</div>
+
+              <a href="#" class="dd-item">
+                <div class="dd-ico">
+                  <svg viewBox="0 0 16 16" fill="none">
+                    <path d="M4 8h8M8 4l4 4-4 4" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="dd-name">Secure Prompt</div>
+                  <div class="dd-desc">Guide secure generation before code lands.</div>
+                </div>
+              </a>
+
+              <a href="#" class="dd-item">
+                <div class="dd-ico">
+                  <svg viewBox="0 0 16 16" fill="none">
+                    <path d="M2 11l3-3 2 2 3-3 4-4" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="dd-name">Pre-commit Scan + AutoFix</div>
+                  <div class="dd-desc">Catch and remediate issues before commit.</div>
+                </div>
+              </a>
+
+              <a href="#" class="dd-item">
+                <div class="dd-ico">
+                  <svg viewBox="0 0 16 16" fill="none">
+                    <path d="M8 2l5 3-5 3-5-3 5-3zM3 9l5 3 5-3" stroke="#00C896" stroke-width="1.4" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="dd-name">AI Threat Model</div>
+                  <div class="dd-desc">Model threats earlier in the lifecycle.</div>
+                </div>
+              </a>
+            </div>
+
+            <div class="menu-col">
+              <div class="menu-col-title">Manual Processes</div>
+
+              <a href="#" class="dd-item">
+                <div class="dd-ico">
+                  <svg viewBox="0 0 16 16" fill="none">
+                    <rect x="3" y="2" width="10" height="12" rx="1.5" stroke="#00C896" stroke-width="1.4"/>
+                    <path d="M6 6h4M6 9h3" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="dd-name">Pen-Test Mgmt + Scoping</div>
+                  <div class="dd-desc">Plan, scope, and manage pen testing.</div>
+                </div>
+              </a>
+
+              <a href="#" class="dd-item">
+                <div class="dd-ico">
+                  <svg viewBox="0 0 16 16" fill="none">
+                    <path d="M3 4h10M3 8h7M3 12h5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="dd-name">Audit – Evidence Collection</div>
+                  <div class="dd-desc">Support audit workflows and evidence gathering.</div>
+                </div>
+              </a>
+
+              <a href="#" class="dd-item">
+                <div class="dd-ico">
+                  <svg viewBox="0 0 16 16" fill="none">
+                    <circle cx="8" cy="8" r="6" stroke="#00C896" stroke-width="1.4"/>
+                    <path d="M5 8h6M8 5v6" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div>
+                  <div class="dd-name">Risk Assessment Questionnaire</div>
+                  <div class="dd-desc">Standardize assessment intake and review.</div>
                 </div>
               </a>
             </div>
@@ -599,6 +817,7 @@
           </div>
         </li>
 
+        <!-- Company -->
         <li class="nav-item" id="menu-company">
           <button class="nav-btn" onclick="toggle('company')">
             Company
@@ -617,7 +836,7 @@
               </div>
               <div>
                 <div class="dd-name">About us</div>
-                <div class="dd-desc">Our mission, vision, and team</div>
+                <div class="dd-desc">Our mission, vision, and team.</div>
               </div>
             </a>
 
@@ -630,7 +849,7 @@
               </div>
               <div>
                 <div class="dd-name">Newsroom</div>
-                <div class="dd-desc">Press releases and announcements</div>
+                <div class="dd-desc">Press releases and company updates.</div>
               </div>
             </a>
 
@@ -643,12 +862,13 @@
               </div>
               <div>
                 <div class="dd-name">Careers</div>
-                <div class="dd-desc">Join the Apiiro team</div>
+                <div class="dd-desc">Join the Apiiro team.</div>
               </div>
             </a>
           </div>
         </li>
 
+        <!-- Resources -->
         <li class="nav-item" id="menu-resources">
           <button class="nav-btn" onclick="toggle('resources')">
             Resources
@@ -667,7 +887,7 @@
               </div>
               <div>
                 <div class="dd-name">Blog</div>
-                <div class="dd-desc">Insights on AppSec and risk</div>
+                <div class="dd-desc">Insights on AppSec and risk.</div>
               </div>
             </a>
 
@@ -680,7 +900,7 @@
               </div>
               <div>
                 <div class="dd-name">Webinars</div>
-                <div class="dd-desc">Live and on-demand sessions</div>
+                <div class="dd-desc">Live and on-demand sessions.</div>
               </div>
             </a>
 
@@ -692,7 +912,7 @@
               </div>
               <div>
                 <div class="dd-name">Documentation</div>
-                <div class="dd-desc">Guides, APIs, and references</div>
+                <div class="dd-desc">Guides, APIs, and references.</div>
               </div>
             </a>
           </div>
@@ -709,9 +929,9 @@
   </header>
 
   <div class="page-body">
-    <strong>↑ Navbar preview — CEO presentation</strong><br>
-    Click any nav item to open its dropdown.<br>
-    Replace <code>#</code> links with real URLs before going live.
+    <strong>↑ Updated navbar structure</strong><br>
+    Product now reflects <code>One Guardian Agent + 5 solutions</code>.<br>
+    Solutions now breaks out the five solution areas and their child pages.
   </div>
 
   <script>
