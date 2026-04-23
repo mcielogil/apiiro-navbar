@@ -3,34 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Apiiro — Navbar Preview</title>
+  <title>Apiiro — Navbar</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: #eef0f3; }
+    body { font-family: 'Inter', sans-serif; background: #eef0f3; min-height: 100vh; }
 
     /* ── Announcement bar ── */
     .ann-bar {
       background: #0f1b2d; text-align: center;
-      padding: 10px 16px; font-size: 13px; color: rgba(255,255,255,0.78);
+      padding: 10px 16px; font-size: 13px; color: rgba(255,255,255,0.75);
     }
     .ann-bar a { color: #3de8b0; text-decoration: none; font-weight: 600; margin-left: 4px; }
+    .ann-bar a:hover { text-decoration: underline; }
 
     /* ── Navbar ── */
-    .navbar { background: #fff; border-bottom: 1px solid #e4e7eb; position: relative; z-index: 10; }
+    /* No overflow:hidden, no position:relative clipping */
+    .navbar { background: #fff; border-bottom: 1px solid #e4e7eb; }
     .nav-inner {
-      max-width: 1400px; margin: 0 auto; padding: 0 32px;
+      max-width: 1280px; margin: 0 auto; padding: 0 32px;
       height: 64px; display: flex; align-items: center;
     }
 
     /* Logo */
-    .nav-logo { display: flex; align-items: center; text-decoration: none; margin-right: 28px; flex-shrink: 0; }
+    .nav-logo { text-decoration: none; margin-right: 28px; flex-shrink: 0; }
     .logo-word { font-size: 22px; font-weight: 700; color: #0f1b2d; letter-spacing: -0.5px; }
 
     /* Nav links */
-    .nav-links { display: flex; align-items: center; list-style: none; flex: 1; }
-    .nav-item { position: relative; }
+    .nav-links { display: flex; align-items: center; list-style: none; flex: 1; gap: 2px; }
+    .nav-item { position: static; }
 
     .nav-btn {
       display: flex; align-items: center; gap: 5px;
@@ -61,48 +63,44 @@
     }
     .btn-demo:hover { background: #00b588; }
 
-    /* ── Mega dropdown shell ── */
-    .dropdown {
+    /* ── Dropdown overlay layer ──
+       Fixed to viewport so it can never be clipped by any parent.
+       JS positions it below the clicked button. */
+    .dropdown-overlay {
       display: none;
-      position: absolute;
-      top: calc(100% + 8px);
-      left: 50%;
-      transform: translateX(-50%);
+      position: fixed;
+      z-index: 9999;
       background: #fff;
       border: 1px solid #e0e4ea;
       border-radius: 16px;
       box-shadow: 0 16px 56px rgba(15,27,45,0.14), 0 2px 8px rgba(15,27,45,0.05);
-      z-index: 500;
       overflow: hidden;
+      animation: dropIn 0.15s ease;
     }
-    .nav-item.open .dropdown { display: flex; animation: dropIn 0.15s ease; }
+    .dropdown-overlay.visible { display: block; }
 
     @keyframes dropIn {
-      from { opacity: 0; transform: translateX(-50%) translateY(-8px); }
-      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── PRODUCT dropdown: left card + right 5 solutions ── */
-    .dd-product { width: 780px; }
-
-    .dd-left {
-      width: 300px; flex-shrink: 0;
-      padding: 24px 20px;
-      border-right: 1px solid #eef0f4;
-    }
-    .dd-right { flex: 1; padding: 24px 20px; }
-
+    /* ── Shared dropdown internals ── */
     .col-title {
       font-size: 11px; font-weight: 700; letter-spacing: 1px;
       text-transform: uppercase; color: #9aa5b4;
       margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
     }
 
+    /* PRODUCT: two-col flex */
+    #dd-product { width: 760px; display: flex; }
+    .dd-left { width: 300px; flex-shrink: 0; padding: 24px 20px; border-right: 1px solid #eef0f4; }
+    .dd-right { flex: 1; padding: 24px 20px; }
+
     /* Guardian Agent card */
     .agent-card {
       border: 1px solid #e0e4ea; border-radius: 12px;
-      padding: 18px; text-decoration: none;
-      display: block; transition: border-color 0.15s, background 0.15s;
+      padding: 18px; text-decoration: none; display: block;
+      transition: border-color 0.15s, background 0.15s;
     }
     .agent-card:hover { border-color: #00C896; background: #f7fffe; }
     .agent-ico {
@@ -111,17 +109,14 @@
     }
     .agent-name { font-size: 16px; font-weight: 700; color: #0f1b2d; margin-bottom: 8px; }
     .agent-desc { font-size: 13px; color: #6b7685; line-height: 1.6; }
-
-    /* Data Fabric badge inside card */
     .fabric-badge {
       display: inline-flex; align-items: center; gap: 4px;
       background: #edfaf5; color: #00956e; border: 1px solid #b3edd8;
-      border-radius: 20px; padding: 4px 10px;
-      font-size: 11px; font-weight: 600; margin-top: 12px;
+      border-radius: 20px; padding: 4px 10px; font-size: 11px; font-weight: 600; margin-top: 12px;
     }
     .fabric-badge svg { width: 11px; height: 11px; }
 
-    /* Right column solution rows */
+    /* Solution rows (right col of product) */
     .sol-row {
       display: flex; align-items: flex-start; gap: 12px;
       padding: 10px 10px; border-radius: 10px; text-decoration: none;
@@ -137,18 +132,19 @@
     .sol-name { font-size: 14px; font-weight: 700; color: #0f1b2d; line-height: 1.3; transition: color 0.12s; }
     .sol-desc { font-size: 12.5px; color: #6b7685; margin-top: 3px; line-height: 1.5; }
 
-    /* DCA badge — standalone block under column title */
+    /* SOLUTIONS: 5-column grid */
+    #dd-solutions { width: min(1200px, 95vw); padding: 24px 20px; }
+    .dd-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .dd-header-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; color: #9aa5b4;
+    }
     .dca-badge {
       display: inline-flex; align-items: center; gap: 5px;
-      background: #00C896; color: #fff;
-      border-radius: 20px; padding: 4px 10px;
-      font-size: 11px; font-weight: 600; letter-spacing: 0.2px;
-      margin-bottom: 8px; margin-left: 8px;
+      background: #00C896; color: #fff; border-radius: 20px;
+      padding: 4px 10px; font-size: 11px; font-weight: 600;
     }
     .dca-badge svg { width: 11px; height: 11px; }
-
-    /* ── SOLUTIONS dropdown: 5 columns ── */
-    .dd-solutions { width: 1100px; padding: 24px 20px; flex-direction: column; }
     .sol-grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0 8px; }
     .sol-col-title {
       font-size: 11px; font-weight: 700; letter-spacing: 1px;
@@ -171,12 +167,11 @@
     .si-name { font-size: 13px; font-weight: 700; color: #0f1b2d; line-height: 1.3; transition: color 0.12s; }
     .si-desc { font-size: 11.5px; color: #6b7685; margin-top: 2px; line-height: 1.4; }
 
-    /* ── Simple dropdown ── */
-    .dd-simple { flex-direction: column; min-width: 240px; padding: 8px; }
+    /* SIMPLE dropdowns */
+    #dd-company, #dd-resources { width: 260px; padding: 8px; }
     .dd-item {
       display: flex; align-items: flex-start; gap: 10px;
-      padding: 9px 10px; border-radius: 8px; text-decoration: none;
-      transition: background 0.12s;
+      padding: 9px 10px; border-radius: 8px; text-decoration: none; transition: background 0.12s;
     }
     .dd-item:hover { background: #edfaf5; }
     .dd-item:hover .dd-name { color: #00C896; }
@@ -188,18 +183,8 @@
     .dd-name { font-size: 13.5px; font-weight: 600; color: #0f1b2d; line-height: 1.3; transition: color 0.12s; }
     .dd-desc { font-size: 12px; color: #6b7685; margin-top: 2px; line-height: 1.4; }
 
-    /* ── Preview section ── */
-    .preview-wrap { max-width: 1400px; margin: 0 auto; padding: 40px 32px; }
-    .preview-title {
-      font-size: 11px; font-weight: 700; letter-spacing: 1px;
-      text-transform: uppercase; color: #9aa5b4; margin-bottom: 12px;
-    }
-    .preview-card {
-      background: #fff; border: 1px solid #e0e4ea; border-radius: 16px;
-      box-shadow: 0 16px 56px rgba(15,27,45,0.1); overflow: hidden;
-      margin-bottom: 32px;
-    }
-    .col-divider { width: 1px; background: #eef0f4; flex-shrink: 0; }
+    /* page hint */
+    .page-hint { text-align: center; padding: 60px 20px; color: #b0b8c4; font-size: 14px; }
   </style>
 </head>
 <body>
@@ -219,142 +204,30 @@
     </a>
 
     <ul class="nav-links">
-
-      <!-- PRODUCT -->
-      <li class="nav-item" id="menu-product">
-        <button class="nav-btn" onclick="toggle('product')">
+      <li class="nav-item" id="item-product">
+        <button class="nav-btn" onclick="toggleMenu('product', this)">
           Product
           <svg class="chev" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
-        <div class="dropdown dd-product">
-          <!-- Left: One Product -->
-          <div class="dd-left">
-            <div class="col-title">One Product</div>
-            <a href="#" class="agent-card">
-              <div class="agent-ico">
-                <svg width="22" height="22" viewBox="0 0 40 40" fill="none"><polygon points="20,2 38,20 20,38 2,20" fill="#00C896"/><polygon points="20,11 29,20 20,29 11,20" fill="#0f1b2d"/></svg>
-              </div>
-              <div class="agent-name">Guardian Agent</div>
-              <div class="agent-desc">One agent, built on the AppSec Data Fabric, spanning detection, prevention, risk management, orchestration, and manual security processes.</div>
-              <span class="fabric-badge">
-                <svg viewBox="0 0 11 11" fill="none"><path d="M5.5 1l1.2 2.5L9.5 4 7.4 6l.5 3L5.5 7.8 3.1 9l.5-3L1.5 4l2.8-.5z" fill="#00956e"/></svg>
-                AppSec Data Fabric
-              </span>
-            </a>
-          </div>
-          <!-- Right: Five Solutions summary -->
-          <div class="dd-right">
-            <div class="col-title">Five Solutions</div>
-            <a href="#" class="sol-row">
-              <div class="sol-ico"><svg viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="1" stroke="#00C896" stroke-width="1.4"/><rect x="10" y="2" width="6" height="6" rx="1" stroke="#00C896" stroke-width="1.4"/><rect x="2" y="10" width="6" height="6" rx="1" stroke="#00C896" stroke-width="1.4" opacity=".5"/><rect x="10" y="10" width="6" height="6" rx="1" stroke="#00C896" stroke-width="1.4" opacity=".5"/></svg></div>
-              <div><div class="sol-name">Detection &amp; Response</div><div class="sol-desc">Scanner-led security coverage across code, secrets, APIs, IaC, and supply chain.</div></div>
-            </a>
-            <a href="#" class="sol-row">
-              <div class="sol-ico"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6" stroke="#00C896" stroke-width="1.4"/><circle cx="9" cy="9" r="2.5" fill="#00C896" opacity=".4"/></svg></div>
-              <div><div class="sol-name">Risk Management</div><div class="sol-desc">SLA management, ticketing/GRC workflows, and ownership mapping.</div></div>
-            </a>
-            <a href="#" class="sol-row">
-              <div class="sol-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M4 9h10M9 4l5 5-5 5" stroke="#00C896" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-              <div><div class="sol-name">Prevention</div><div class="sol-desc">Stop issues earlier with secure prompt, pre-commit scanning, autofix, and AI threat modeling.</div></div>
-            </a>
-            <a href="#" class="sol-row">
-              <div class="sol-ico"><svg viewBox="0 0 18 18" fill="none"><circle cx="4" cy="9" r="2" stroke="#00C896" stroke-width="1.3"/><circle cx="14" cy="4" r="2" stroke="#00C896" stroke-width="1.3"/><circle cx="14" cy="14" r="2" stroke="#00C896" stroke-width="1.3"/><path d="M6 9h4M12 5.5L9.5 8M12 12.5L9.5 10" stroke="#00C896" stroke-width="1.3" stroke-linecap="round"/></svg></div>
-              <div><div class="sol-name">Orchestration</div><div class="sol-desc">Connect 3rd-party tools, workflows, and reporting layers.</div></div>
-            </a>
-            <a href="#" class="sol-row">
-              <div class="sol-ico"><svg viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="12" height="14" rx="2" stroke="#00C896" stroke-width="1.4"/><path d="M6 7h6M6 10h4" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div>
-              <div><div class="sol-name">Manual Processes</div><div class="sol-desc">Pen-test management, audit evidence collection, and assessment workflows.</div></div>
-            </a>
-          </div>
-        </div>
       </li>
-
-      <!-- SOLUTIONS -->
-      <li class="nav-item" id="menu-solutions">
-        <button class="nav-btn" onclick="toggle('solutions')">
+      <li class="nav-item" id="item-solutions">
+        <button class="nav-btn" onclick="toggleMenu('solutions', this)">
           Solutions
           <svg class="chev" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
-        <div class="dropdown dd-solutions">
-          <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
-            <span style="font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#9aa5b4;">By use case</span>
-            <span class="dca-badge"><svg viewBox="0 0 10 10" fill="none"><path d="M5 1l1.12 2.27L9 3.63 6.99 5.59l.47 2.74L5 7.02 2.54 8.33l.47-2.74L1 3.63l2.88-.36z" fill="#fff"/></svg>Powered by DCA</span>
-          </div>
-          <div class="sol-grid-5">
-
-            <!-- Detection & Response -->
-            <div>
-              <span class="sol-col-title">Detection &amp; Response</span>
-              <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M2 16V7l7-5 7 5v9" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 16v-5h4v5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">AI SCA</div><div class="si-desc">AI-powered software composition analysis.</div></div></a>
-              <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="14" height="14" rx="2" stroke="#00C896" stroke-width="1.4"/><path d="M5 9h8M5 6h5M5 12h3" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">AI SAST</div><div class="si-desc">Intelligent code risk analysis.</div></div></a>
-              <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M3 5h12M3 9h8M3 13h5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">SSCS</div><div class="si-desc">Software supply chain security.</div></div></a>
-              <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6" stroke="#00C896" stroke-width="1.4"/><path d="M9 6v4M9 12v.5" stroke="#00C896" stroke-width="1.5" stroke-linecap="round"/></svg></div><div><div class="si-name">Secrets</div><div class="si-desc">Detect secrets exposure across codebases.</div></div></a>
-              <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6" stroke="#00C896" stroke-width="1.4"/><path d="M6 9h.01M9 9h.01M12 9h.01" stroke="#00C896" stroke-width="2" stroke-linecap="round"/></svg></div><div><div class="si-name">APIsec</div><div class="si-desc">Surface API-related security issues.</div></div></a>
-              <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><rect x="3" y="3" width="12" height="12" rx="1.5" stroke="#00C896" stroke-width="1.4"/><path d="M6 9h6M9 6v6" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">IaC</div><div class="si-desc">Infrastructure as code risk detection.</div></div></a>
-            </div>
-
-            <!-- Risk Management -->
-            <div>
-              <span class="sol-col-title">Risk Management</span>
-              <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6" stroke="#00C896" stroke-width="1.4"/><path d="M9 6v3l2 2" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">SLA</div><div class="si-desc">Enforce and track security SLAs.</div></div></a>
-              <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><rect x="3" y="3" width="12" height="12" rx="2" stroke="#00C896" stroke-width="1.4"/><path d="M6 8l1.5 1.5L12 6" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="si-name">Ticketing / GRC</div><div class="si-desc">Connect remediation to governance systems.</div></div></a>
-              <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3" stroke="#00C896" stroke-width="1.4"/><path d="M3 16c0-3.3 2.7-5 6-5s6 1.7 6 5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">Org Code Owners</div><div class="si-desc">Map issues to responsible teams and owners.</div></div></a>
-            </div>
-
-            <!-- Orchestration -->
-            <div>
-              <span class="sol-col-title">Orchestration</span>
-              <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><circle cx="4" cy="9" r="2" stroke="#00C896" stroke-width="1.3"/><circle cx="14" cy="4" r="2" stroke="#00C896" stroke-width="1.3"/><circle cx="14" cy="14" r="2" stroke="#00C896" stroke-width="1.3"/><path d="M6 9h4M12 5.5L9.5 8M12 12.5L9.5 10" stroke="#00C896" stroke-width="1.3" stroke-linecap="round"/></svg></div><div><div class="si-name">3rd-party Tools</div><div class="si-desc">Integrate with the rest of the security stack.</div></div></a>
-              <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M3 5h12M3 9h8M3 13h10" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">Workflows</div><div class="si-desc">Route findings through operational processes.</div></div></a>
-              <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M2 14l4-8 3 5 2-3 4 6" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="si-name">Reporting</div><div class="si-desc">Operational and executive reporting workflows.</div></div></a>
-            </div>
-
-            <!-- Prevention -->
-            <div>
-              <span class="sol-col-title">Prevention</span>
-              <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M9 2l6 3.5v5c0 3.5-6 5.5-6 5.5S3 14 3 10.5v-5z" stroke="#00C896" stroke-width="1.4" stroke-linejoin="round"/></svg></div><div><div class="si-name">Secure Prompt</div><div class="si-desc">Guide secure generation before code lands.</div></div></a>
-              <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M3 12l3-3 2 2 3-4 5-5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="si-name">Pre-commit Scan + AutoFix</div><div class="si-desc">Catch and remediate issues before commit.</div></div></a>
-              <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><polygon points="9,2 16,9 9,16 2,9" stroke="#00C896" stroke-width="1.4" fill="none"/><circle cx="9" cy="9" r="2" fill="#00C896" opacity=".5"/></svg></div><div><div class="si-name">AI Threat Model</div><div class="si-desc">Model threats earlier in the lifecycle.</div></div></a>
-            </div>
-
-            <!-- Manual Processes -->
-            <div>
-              <span class="sol-col-title">Manual Processes</span>
-              <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="12" height="14" rx="2" stroke="#00C896" stroke-width="1.4"/><path d="M6 7h6M6 10h4" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">Pen-Test Mgmt + Scoping</div><div class="si-desc">Plan, scope, and manage pen testing.</div></div></a>
-              <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M3 5h12M3 9h8M3 13h5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">Audit – Evidence Collection</div><div class="si-desc">Support audit workflows and evidence gathering.</div></div></a>
-              <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><rect x="3" y="3" width="12" height="12" rx="2" stroke="#00C896" stroke-width="1.4"/><path d="M6 9h6M9 6v6" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">Risk Assessment Questionnaire</div><div class="si-desc">Standardize assessment intake and review.</div></div></a>
-            </div>
-
-          </div>
-        </div>
       </li>
-
-      <!-- COMPANY -->
-      <li class="nav-item" id="menu-company">
-        <button class="nav-btn" onclick="toggle('company')">
+      <li class="nav-item" id="item-company">
+        <button class="nav-btn" onclick="toggleMenu('company', this)">
           Company
           <svg class="chev" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
-        <div class="dropdown dd-simple">
-          <a href="#" class="dd-item"><div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="3" stroke="#00C896" stroke-width="1.4"/><path d="M2 14c0-3.3 2.7-5 6-5s6 1.7 6 5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="dd-name">About us</div><div class="dd-desc">Our mission, vision, and team</div></div></a>
-          <a href="#" class="dd-item"><div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2v5l3 2" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="8" r="6" stroke="#00C896" stroke-width="1.4"/></svg></div><div><div class="dd-name">Newsroom</div><div class="dd-desc">Press releases and announcements</div></div></a>
-          <a href="#" class="dd-item"><div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 12l3-3 2 2 5-6" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><rect x="2" y="2" width="12" height="12" rx="2" stroke="#00C896" stroke-width="1.4"/></svg></div><div><div class="dd-name">Careers</div><div class="dd-desc">Join the Apiiro team</div></div></a>
-        </div>
       </li>
-
-      <!-- RESOURCES -->
-      <li class="nav-item" id="menu-resources">
-        <button class="nav-btn" onclick="toggle('resources')">
+      <li class="nav-item" id="item-resources">
+        <button class="nav-btn" onclick="toggleMenu('resources', this)">
           Resources
           <svg class="chev" viewBox="0 0 14 14" fill="none"><path d="M3 5l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </button>
-        <div class="dropdown dd-simple">
-          <a href="#" class="dd-item"><div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><rect x="3" y="2" width="10" height="12" rx="1.5" stroke="#00C896" stroke-width="1.4"/><path d="M6 6h4M6 9h3" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="dd-name">Blog</div><div class="dd-desc">Insights on AppSec and risk</div></div></a>
-          <a href="#" class="dd-item"><div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#00C896" stroke-width="1.4"/><polygon points="6.5,5.5 6.5,10.5 11,8" fill="#00C896"/></svg></div><div><div class="dd-name">Webinars</div><div class="dd-desc">Live and on-demand sessions</div></div></a>
-          <a href="#" class="dd-item"><div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10M3 8h7M3 12h5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="dd-name">Documentation</div><div class="dd-desc">Guides, APIs, and references</div></div></a>
-        </div>
       </li>
-
     </ul>
 
     <div class="nav-right">
@@ -364,86 +237,158 @@
   </nav>
 </header>
 
-<!-- ── STATIC ALWAYS-VISIBLE PREVIEW ── -->
-<div class="preview-wrap">
+<!-- ── DROPDOWN OVERLAYS (fixed, never clipped) ── -->
 
-  <div class="preview-title">Product menu</div>
-  <div class="preview-card" style="display:flex; margin-bottom:32px;">
-    <div class="dd-left" style="width:300px; flex-shrink:0; padding:24px 20px; border-right:1px solid #eef0f4;">
-      <div class="col-title">One Product</div>
-      <a href="#" class="agent-card">
-        <div class="agent-ico"><svg width="22" height="22" viewBox="0 0 40 40" fill="none"><polygon points="20,2 38,20 20,38 2,20" fill="#00C896"/><polygon points="20,11 29,20 20,29 11,20" fill="#0f1b2d"/></svg></div>
-        <div class="agent-name">Guardian Agent</div>
-        <div class="agent-desc">One agent, built on the AppSec Data Fabric, spanning detection, prevention, risk management, orchestration, and manual security processes.</div>
-        <span class="fabric-badge"><svg viewBox="0 0 11 11" fill="none"><path d="M5.5 1l1.2 2.5L9.5 4 7.4 6l.5 3L5.5 7.8 3.1 9l.5-3L1.5 4l2.8-.5z" fill="#00956e"/></svg>AppSec Data Fabric</span>
-      </a>
-    </div>
-    <div class="dd-right" style="flex:1; padding:24px 20px;">
-      <div class="col-title">Five Solutions</div>
-      <a href="#" class="sol-row"><div class="sol-ico"><svg viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="1" stroke="#00C896" stroke-width="1.4"/><rect x="10" y="2" width="6" height="6" rx="1" stroke="#00C896" stroke-width="1.4"/><rect x="2" y="10" width="6" height="6" rx="1" stroke="#00C896" stroke-width="1.4" opacity=".5"/><rect x="10" y="10" width="6" height="6" rx="1" stroke="#00C896" stroke-width="1.4" opacity=".5"/></svg></div><div><div class="sol-name">Detection &amp; Response</div><div class="sol-desc">Scanner-led security coverage across code, secrets, APIs, IaC, and supply chain.</div></div></a>
-      <a href="#" class="sol-row"><div class="sol-ico"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6" stroke="#00C896" stroke-width="1.4"/><circle cx="9" cy="9" r="2.5" fill="#00C896" opacity=".4"/></svg></div><div><div class="sol-name">Risk Management</div><div class="sol-desc">SLA management, ticketing/GRC workflows, and ownership mapping.</div></div></a>
-      <a href="#" class="sol-row"><div class="sol-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M4 9h10M9 4l5 5-5 5" stroke="#00C896" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="sol-name">Prevention</div><div class="sol-desc">Stop issues earlier with secure prompt, pre-commit scanning, autofix, and AI threat modeling.</div></div></a>
-      <a href="#" class="sol-row"><div class="sol-ico"><svg viewBox="0 0 18 18" fill="none"><circle cx="4" cy="9" r="2" stroke="#00C896" stroke-width="1.3"/><circle cx="14" cy="4" r="2" stroke="#00C896" stroke-width="1.3"/><circle cx="14" cy="14" r="2" stroke="#00C896" stroke-width="1.3"/><path d="M6 9h4M12 5.5L9.5 8M12 12.5L9.5 10" stroke="#00C896" stroke-width="1.3" stroke-linecap="round"/></svg></div><div><div class="sol-name">Orchestration</div><div class="sol-desc">Connect 3rd-party tools, workflows, and reporting layers.</div></div></a>
-      <a href="#" class="sol-row"><div class="sol-ico"><svg viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="12" height="14" rx="2" stroke="#00C896" stroke-width="1.4"/><path d="M6 7h6M6 10h4" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="sol-name">Manual Processes</div><div class="sol-desc">Pen-test management, audit evidence collection, and assessment workflows.</div></div></a>
-    </div>
+<!-- PRODUCT -->
+<div class="dropdown-overlay" id="dd-product">
+  <div class="dd-left">
+    <div class="col-title">One Product</div>
+    <a href="#" class="agent-card">
+      <div class="agent-ico">
+        <svg width="22" height="22" viewBox="0 0 40 40" fill="none"><polygon points="20,2 38,20 20,38 2,20" fill="#00C896"/><polygon points="20,11 29,20 20,29 11,20" fill="#0f1b2d"/></svg>
+      </div>
+      <div class="agent-name">Guardian Agent</div>
+      <div class="agent-desc">One agent, built on the AppSec Data Fabric, spanning detection, prevention, risk management, orchestration, and manual security processes.</div>
+      <span class="fabric-badge">
+        <svg viewBox="0 0 11 11" fill="none"><path d="M5.5 1l1.2 2.5L9.5 4 7.4 6l.5 3L5.5 7.8 3.1 9l.5-3L1.5 4l2.8-.5z" fill="#00956e"/></svg>
+        AppSec Data Fabric
+      </span>
+    </a>
   </div>
-
-  <div class="preview-title">Solutions menu</div>
-  <div class="preview-card" style="padding:24px 20px; margin-bottom:32px;">
-    <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
-      <span style="font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:#9aa5b4;">By use case</span>
-      <span class="dca-badge"><svg viewBox="0 0 10 10" fill="none"><path d="M5 1l1.12 2.27L9 3.63 6.99 5.59l.47 2.74L5 7.02 2.54 8.33l.47-2.74L1 3.63l2.88-.36z" fill="#fff"/></svg>Powered by DCA</span>
-    </div>
-    <div class="sol-grid-5">
-      <div>
-        <span class="sol-col-title">Detection &amp; Response</span>
-        <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M2 16V7l7-5 7 5v9" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 16v-5h4v5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">AI SCA</div><div class="si-desc">AI-powered software composition analysis.</div></div></a>
-        <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="14" height="14" rx="2" stroke="#00C896" stroke-width="1.4"/><path d="M5 9h8M5 6h5M5 12h3" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">AI SAST</div><div class="si-desc">Intelligent code risk analysis.</div></div></a>
-        <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M3 5h12M3 9h8M3 13h5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">SSCS</div><div class="si-desc">Software supply chain security.</div></div></a>
-        <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6" stroke="#00C896" stroke-width="1.4"/><path d="M9 6v4M9 12v.5" stroke="#00C896" stroke-width="1.5" stroke-linecap="round"/></svg></div><div><div class="si-name">Secrets</div><div class="si-desc">Detect secrets exposure across codebases.</div></div></a>
-        <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6" stroke="#00C896" stroke-width="1.4"/><path d="M6 9h.01M9 9h.01M12 9h.01" stroke="#00C896" stroke-width="2" stroke-linecap="round"/></svg></div><div><div class="si-name">APIsec</div><div class="si-desc">Surface API-related security issues.</div></div></a>
-        <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><rect x="3" y="3" width="12" height="12" rx="1.5" stroke="#00C896" stroke-width="1.4"/><path d="M6 9h6M9 6v6" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">IaC</div><div class="si-desc">Infrastructure as code risk detection.</div></div></a>
-      </div>
-      <div>
-        <span class="sol-col-title">Risk Management</span>
-        <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6" stroke="#00C896" stroke-width="1.4"/><path d="M9 6v3l2 2" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">SLA</div><div class="si-desc">Enforce and track security SLAs.</div></div></a>
-        <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><rect x="3" y="3" width="12" height="12" rx="2" stroke="#00C896" stroke-width="1.4"/><path d="M6 8l1.5 1.5L12 6" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="si-name">Ticketing / GRC</div><div class="si-desc">Connect remediation to governance systems.</div></div></a>
-        <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3" stroke="#00C896" stroke-width="1.4"/><path d="M3 16c0-3.3 2.7-5 6-5s6 1.7 6 5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">Org Code Owners</div><div class="si-desc">Map issues to responsible teams and owners.</div></div></a>
-      </div>
-      <div>
-        <span class="sol-col-title">Orchestration</span>
-        <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><circle cx="4" cy="9" r="2" stroke="#00C896" stroke-width="1.3"/><circle cx="14" cy="4" r="2" stroke="#00C896" stroke-width="1.3"/><circle cx="14" cy="14" r="2" stroke="#00C896" stroke-width="1.3"/><path d="M6 9h4M12 5.5L9.5 8M12 12.5L9.5 10" stroke="#00C896" stroke-width="1.3" stroke-linecap="round"/></svg></div><div><div class="si-name">3rd-party Tools</div><div class="si-desc">Integrate with the rest of the security stack.</div></div></a>
-        <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M3 5h12M3 9h8M3 13h10" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">Workflows</div><div class="si-desc">Route findings through operational processes.</div></div></a>
-        <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M2 14l4-8 3 5 2-3 4 6" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="si-name">Reporting</div><div class="si-desc">Operational and executive reporting workflows.</div></div></a>
-      </div>
-      <div>
-        <span class="sol-col-title">Prevention</span>
-        <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M9 2l6 3.5v5c0 3.5-6 5.5-6 5.5S3 14 3 10.5v-5z" stroke="#00C896" stroke-width="1.4" stroke-linejoin="round"/></svg></div><div><div class="si-name">Secure Prompt</div><div class="si-desc">Guide secure generation before code lands.</div></div></a>
-        <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M3 12l3-3 2 2 3-4 5-5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="si-name">Pre-commit Scan + AutoFix</div><div class="si-desc">Catch and remediate issues before commit.</div></div></a>
-        <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><polygon points="9,2 16,9 9,16 2,9" stroke="#00C896" stroke-width="1.4" fill="none"/><circle cx="9" cy="9" r="2" fill="#00C896" opacity=".5"/></svg></div><div><div class="si-name">AI Threat Model</div><div class="si-desc">Model threats earlier in the lifecycle.</div></div></a>
-      </div>
-      <div>
-        <span class="sol-col-title">Manual Processes</span>
-        <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="12" height="14" rx="2" stroke="#00C896" stroke-width="1.4"/><path d="M6 7h6M6 10h4" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">Pen-Test Mgmt + Scoping</div><div class="si-desc">Plan, scope, and manage pen testing.</div></div></a>
-        <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M3 5h12M3 9h8M3 13h5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">Audit – Evidence Collection</div><div class="si-desc">Support audit workflows and evidence gathering.</div></div></a>
-        <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><rect x="3" y="3" width="12" height="12" rx="2" stroke="#00C896" stroke-width="1.4"/><path d="M6 9h6M9 6v6" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">Risk Assessment Questionnaire</div><div class="si-desc">Standardize assessment intake and review.</div></div></a>
-      </div>
-    </div>
+  <div class="dd-right">
+    <div class="col-title">Five Solutions</div>
+    <a href="#" class="sol-row"><div class="sol-ico"><svg viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="6" height="6" rx="1" stroke="#00C896" stroke-width="1.4"/><rect x="10" y="2" width="6" height="6" rx="1" stroke="#00C896" stroke-width="1.4"/><rect x="2" y="10" width="6" height="6" rx="1" stroke="#00C896" stroke-width="1.4" opacity=".5"/><rect x="10" y="10" width="6" height="6" rx="1" stroke="#00C896" stroke-width="1.4" opacity=".5"/></svg></div><div><div class="sol-name">Detection &amp; Response</div><div class="sol-desc">Scanner-led security coverage across code, secrets, APIs, IaC, and supply chain.</div></div></a>
+    <a href="#" class="sol-row"><div class="sol-ico"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6" stroke="#00C896" stroke-width="1.4"/><circle cx="9" cy="9" r="2.5" fill="#00C896" opacity=".4"/></svg></div><div><div class="sol-name">Risk Management</div><div class="sol-desc">SLA management, ticketing/GRC workflows, and ownership mapping.</div></div></a>
+    <a href="#" class="sol-row"><div class="sol-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M4 9h10M9 4l5 5-5 5" stroke="#00C896" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="sol-name">Prevention</div><div class="sol-desc">Stop issues earlier with secure prompt, pre-commit scanning, autofix, and AI threat modeling.</div></div></a>
+    <a href="#" class="sol-row"><div class="sol-ico"><svg viewBox="0 0 18 18" fill="none"><circle cx="4" cy="9" r="2" stroke="#00C896" stroke-width="1.3"/><circle cx="14" cy="4" r="2" stroke="#00C896" stroke-width="1.3"/><circle cx="14" cy="14" r="2" stroke="#00C896" stroke-width="1.3"/><path d="M6 9h4M12 5.5L9.5 8M12 12.5L9.5 10" stroke="#00C896" stroke-width="1.3" stroke-linecap="round"/></svg></div><div><div class="sol-name">Orchestration</div><div class="sol-desc">Connect 3rd-party tools, workflows, and reporting layers.</div></div></a>
+    <a href="#" class="sol-row"><div class="sol-ico"><svg viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="12" height="14" rx="2" stroke="#00C896" stroke-width="1.4"/><path d="M6 7h6M6 10h4" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="sol-name">Manual Processes</div><div class="sol-desc">Pen-test management, audit evidence collection, and assessment workflows.</div></div></a>
   </div>
-
 </div>
 
-<script>
-  function toggle(id) {
-    document.querySelectorAll('.nav-item').forEach(el => {
-      el.classList[el.id === 'menu-' + id ? 'toggle' : 'remove']('open');
-    });
-  }
-  document.addEventListener('click', e => {
-    if (!e.target.closest('.nav-item'))
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('open'));
-  });
-</script>
+<!-- SOLUTIONS -->
+<div class="dropdown-overlay" id="dd-solutions">
+  <div class="dd-header">
+    <span class="dd-header-label">By use case</span>
+    <span class="dca-badge"><svg viewBox="0 0 10 10" fill="none"><path d="M5 1l1.12 2.27L9 3.63 6.99 5.59l.47 2.74L5 7.02 2.54 8.33l.47-2.74L1 3.63l2.88-.36z" fill="#fff"/></svg>Powered by DCA</span>
+  </div>
+  <div class="sol-grid-5">
+    <!-- Detection & Response -->
+    <div>
+      <span class="sol-col-title">Detection &amp; Response</span>
+      <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M2 16V7l7-5 7 5v9" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 16v-5h4v5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">AI SCA</div><div class="si-desc">AI-powered software composition analysis.</div></div></a>
+      <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><rect x="2" y="2" width="14" height="14" rx="2" stroke="#00C896" stroke-width="1.4"/><path d="M5 9h8M5 6h5M5 12h3" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">AI SAST</div><div class="si-desc">Intelligent code risk analysis.</div></div></a>
+      <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M3 5h12M3 9h8M3 13h5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">SSCS</div><div class="si-desc">Software supply chain security.</div></div></a>
+      <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6" stroke="#00C896" stroke-width="1.4"/><path d="M9 6v4M9 12v.5" stroke="#00C896" stroke-width="1.5" stroke-linecap="round"/></svg></div><div><div class="si-name">Secrets</div><div class="si-desc">Detect secrets exposure across codebases.</div></div></a>
+      <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6" stroke="#00C896" stroke-width="1.4"/><path d="M6 9h.01M9 9h.01M12 9h.01" stroke="#00C896" stroke-width="2" stroke-linecap="round"/></svg></div><div><div class="si-name">APIsec</div><div class="si-desc">Surface API-related security issues.</div></div></a>
+      <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><rect x="3" y="3" width="12" height="12" rx="1.5" stroke="#00C896" stroke-width="1.4"/><path d="M6 9h6M9 6v6" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">IaC</div><div class="si-desc">Infrastructure as code risk detection.</div></div></a>
+    </div>
+    <!-- Risk Management -->
+    <div>
+      <span class="sol-col-title">Risk Management</span>
+      <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="9" r="6" stroke="#00C896" stroke-width="1.4"/><path d="M9 6v3l2 2" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">SLA</div><div class="si-desc">Enforce and track security SLAs.</div></div></a>
+      <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><rect x="3" y="3" width="12" height="12" rx="2" stroke="#00C896" stroke-width="1.4"/><path d="M6 8l1.5 1.5L12 6" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="si-name">Ticketing / GRC</div><div class="si-desc">Connect remediation to governance systems.</div></div></a>
+      <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><circle cx="9" cy="7" r="3" stroke="#00C896" stroke-width="1.4"/><path d="M3 16c0-3.3 2.7-5 6-5s6 1.7 6 5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">Org Code Owners</div><div class="si-desc">Map issues to responsible teams and owners.</div></div></a>
+    </div>
+    <!-- Orchestration -->
+    <div>
+      <span class="sol-col-title">Orchestration</span>
+      <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><circle cx="4" cy="9" r="2" stroke="#00C896" stroke-width="1.3"/><circle cx="14" cy="4" r="2" stroke="#00C896" stroke-width="1.3"/><circle cx="14" cy="14" r="2" stroke="#00C896" stroke-width="1.3"/><path d="M6 9h4M12 5.5L9.5 8M12 12.5L9.5 10" stroke="#00C896" stroke-width="1.3" stroke-linecap="round"/></svg></div><div><div class="si-name">3rd-party Tools</div><div class="si-desc">Integrate with the rest of the security stack.</div></div></a>
+      <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M3 5h12M3 9h8M3 13h10" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">Workflows</div><div class="si-desc">Route findings through operational processes.</div></div></a>
+      <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M2 14l4-8 3 5 2-3 4 6" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="si-name">Reporting</div><div class="si-desc">Operational and executive reporting workflows.</div></div></a>
+    </div>
+    <!-- Prevention -->
+    <div>
+      <span class="sol-col-title">Prevention</span>
+      <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M9 2l6 3.5v5c0 3.5-6 5.5-6 5.5S3 14 3 10.5v-5z" stroke="#00C896" stroke-width="1.4" stroke-linejoin="round"/></svg></div><div><div class="si-name">Secure Prompt</div><div class="si-desc">Guide secure generation before code lands.</div></div></a>
+      <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M3 12l3-3 2 2 3-4 5-5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><div class="si-name">Pre-commit Scan + AutoFix</div><div class="si-desc">Catch and remediate issues before commit.</div></div></a>
+      <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><polygon points="9,2 16,9 9,16 2,9" stroke="#00C896" stroke-width="1.4" fill="none"/><circle cx="9" cy="9" r="2" fill="#00C896" opacity=".5"/></svg></div><div><div class="si-name">AI Threat Model</div><div class="si-desc">Model threats earlier in the lifecycle.</div></div></a>
+    </div>
+    <!-- Manual Processes -->
+    <div>
+      <span class="sol-col-title">Manual Processes</span>
+      <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><rect x="3" y="2" width="12" height="14" rx="2" stroke="#00C896" stroke-width="1.4"/><path d="M6 7h6M6 10h4" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">Pen-Test Mgmt + Scoping</div><div class="si-desc">Plan, scope, and manage pen testing.</div></div></a>
+      <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><path d="M3 5h12M3 9h8M3 13h5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">Audit – Evidence Collection</div><div class="si-desc">Support audit workflows and evidence gathering.</div></div></a>
+      <a href="#" class="sol-item"><div class="si-ico"><svg viewBox="0 0 18 18" fill="none"><rect x="3" y="3" width="12" height="12" rx="2" stroke="#00C896" stroke-width="1.4"/><path d="M6 9h6M9 6v6" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="si-name">Risk Assessment Questionnaire</div><div class="si-desc">Standardize assessment intake and review.</div></div></a>
+    </div>
+  </div>
+</div>
 
+<!-- COMPANY -->
+<div class="dropdown-overlay" id="dd-company">
+  <a href="#" class="dd-item"><div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="6" r="3" stroke="#00C896" stroke-width="1.4"/><path d="M2 14c0-3.3 2.7-5 6-5s6 1.7 6 5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="dd-name">About us</div><div class="dd-desc">Our mission, vision, and team</div></div></a>
+  <a href="#" class="dd-item"><div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2v5l3 2" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="8" r="6" stroke="#00C896" stroke-width="1.4"/></svg></div><div><div class="dd-name">Newsroom</div><div class="dd-desc">Press releases and announcements</div></div></a>
+  <a href="#" class="dd-item"><div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 12l3-3 2 2 5-6" stroke="#00C896" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><rect x="2" y="2" width="12" height="12" rx="2" stroke="#00C896" stroke-width="1.4"/></svg></div><div><div class="dd-name">Careers</div><div class="dd-desc">Join the Apiiro team</div></div></a>
+</div>
+
+<!-- RESOURCES -->
+<div class="dropdown-overlay" id="dd-resources">
+  <a href="#" class="dd-item"><div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><rect x="3" y="2" width="10" height="12" rx="1.5" stroke="#00C896" stroke-width="1.4"/><path d="M6 6h4M6 9h3" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="dd-name">Blog</div><div class="dd-desc">Insights on AppSec and risk</div></div></a>
+  <a href="#" class="dd-item"><div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="#00C896" stroke-width="1.4"/><polygon points="6.5,5.5 6.5,10.5 11,8" fill="#00C896"/></svg></div><div><div class="dd-name">Webinars</div><div class="dd-desc">Live and on-demand sessions</div></div></a>
+  <a href="#" class="dd-item"><div class="dd-ico"><svg viewBox="0 0 16 16" fill="none"><path d="M3 4h10M3 8h7M3 12h5" stroke="#00C896" stroke-width="1.4" stroke-linecap="round"/></svg></div><div><div class="dd-name">Documentation</div><div class="dd-desc">Guides, APIs, and references</div></div></a>
+</div>
+
+<div class="page-hint">← Click any nav item above to open its dropdown</div>
+
+<script>
+  const MENUS = ['product', 'solutions', 'company', 'resources'];
+  let current = null;
+
+  function closeAll() {
+    MENUS.forEach(id => {
+      document.getElementById('dd-' + id).classList.remove('visible');
+      const item = document.getElementById('item-' + id);
+      if (item) item.classList.remove('open');
+    });
+    current = null;
+  }
+
+  function toggleMenu(id, btn) {
+    if (current === id) { closeAll(); return; }
+    closeAll();
+
+    const dd = document.getElementById('dd-' + id);
+    const rect = btn.getBoundingClientRect();
+    const ddWidth = dd.offsetWidth || parseInt(getComputedStyle(dd).width) || 300;
+    const vpWidth = window.innerWidth;
+    const GAP = 8;
+
+    // Show temporarily to measure
+    dd.style.visibility = 'hidden';
+    dd.classList.add('visible');
+    const actualWidth = dd.offsetWidth;
+    dd.classList.remove('visible');
+    dd.style.visibility = '';
+
+    // Vertical: just below the button
+    const top = rect.bottom + GAP;
+
+    // Horizontal: center under button, but clamp so it never goes off screen
+    const PADDING = 12;
+    let left = rect.left + rect.width / 2 - actualWidth / 2;
+    left = Math.max(PADDING, Math.min(left, vpWidth - actualWidth - PADDING));
+
+    dd.style.top = top + 'px';
+    dd.style.left = left + 'px';
+
+    dd.classList.add('visible');
+    document.getElementById('item-' + id).classList.add('open');
+    current = id;
+
+    // Re-animate
+    dd.style.animation = 'none';
+    dd.offsetHeight;
+    dd.style.animation = '';
+  }
+
+  // Close on outside click
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.nav-item') && !e.target.closest('.dropdown-overlay')) {
+      closeAll();
+    }
+  });
+
+  // Reposition on resize
+  window.addEventListener('resize', closeAll);
+</script>
 </body>
 </html>
